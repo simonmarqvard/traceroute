@@ -1,10 +1,11 @@
+//Imported packages
 let traceRoute = require('nodejs-traceroute')
 let yargs = require('yargs')
 let fs = require('fs');
 const tracer = new traceRoute();
 
-let getTrace = (inputAddress, callback) => {
 
+let getTrace = (inputAddress, callback) => {
   tracer
     .on('hop', (hop) => {
       if (hop.ip != "*") {
@@ -33,7 +34,6 @@ let getTrace = (inputAddress, callback) => {
           console.log("saved to array")
         }
       })
-      //callback(listofip)
       let obj = {}
       Object.keys(listofip).forEach((key) => {
         obj = {
@@ -45,6 +45,7 @@ let getTrace = (inputAddress, callback) => {
   }
 }
 
+//Export module to app.js
 module.exports = {
   getTrace: getTrace
 }
