@@ -1,37 +1,47 @@
+//packages
+
 let fs = require('fs');
 let yargs = require('yargs')
 let traceRoute = require('nodejs-traceroute')
+let request = require('request')
 
+//page
+const routes = require('./getRouteIP/routes.js')
+
+//input through yargs
 const input = yargs.argv._[0]
-const tracer = new traceRoute();
 
-tracer
-  .on('hop', (hop) => {
-    if (hop.ip != "*") {
-      fs.appendFile(`/Users/simonjensen/desktop/nodetraceroute/simonroutes.txt`, `${JSON.stringify(hop.ip)}` + '\n', function(err) {
-        if (err) {
-          console.log(err)
-        }
-        console.log("success")
-        getData()
-      });
+
+let IpsForLocation = new Array;
+
+routes.getTrace(input, (errorMessage, results) => {
+  if (errorMessage) {
+    console.log(errorMessage)
+  }
+  IpsForLocation.push(results);
+  if (IpsForLocation.length > 1) {
+    IpsForLocation.shift()
+  }
+  let numbers = IpsForLocation[0]
+  console.log(numbers)
+  let Ips = Object.values(numbers)
+  let actualNumber = Ips[0]
+  getLocation(actualNumber)
+})
+
+
+var getLocation = (ip) => {
+
+  request({
+    url: `http://ip-api.com/json/${ip}`,
+    json: true
+  }, (error, response, body) => {
+    if (error) {
+      console.log("unable to connect to ipAPI")
+    } else if (response.statusCode === 400) {
+      console.log("unable to fetch data from API")
+    } else if (response.statusCode === 200) {
+      console.log(body)
     }
-  })
-
-tracer.trace(input);
-
-let listofip = []
-
-function getData() {
-  fs.readFile('simonroutes.txt', "utf8", function(err, data) {
-    if (err) throw err;
-    let ips = data.split('\n')
-    ips.forEach(element => {
-      let ip = element.substring(1, element.length - 1)
-      listofip.push(ip)
-    })
-
-    console.log(listofip)
-    // let IPaddress = eraseBefore.substring(1, eraseBefore.length - 1)
   })
 }
