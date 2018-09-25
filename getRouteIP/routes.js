@@ -4,6 +4,7 @@ let yargs = require('yargs')
 let fs = require('fs');
 const tracer = new traceRoute();
 
+//i think this is running too fast - before showDataArray can follow up
 
 let getTrace = (inputAddress, callback) => {
   tracer

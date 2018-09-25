@@ -33,16 +33,18 @@ routes.getTrace(input, (errorMessage, results) => {
   }
   //this needs to be better
   let numbers = IpsForLocation[0]
-  console.log(numbers)
   let Ips = Object.values(numbers)
   let actualNumber = Ips[0]
   getLocation(actualNumber)
+
 })
+
+let information = [];
 
 //Get name and location (lat,lon) for IP
 var getLocation = (ip) => {
 
-  let information;
+
 
   request({
     url: `http://ip-api.com/json/${ip}`,
@@ -53,21 +55,27 @@ var getLocation = (ip) => {
     } else if (response.statusCode === 400) {
       console.log("unable to fetch data from API")
     } else if (response.statusCode === 200) {
-      let information = {
+      console.log("IP" + ip)
+      let information2 = {
         country: body.country,
         city: body.city,
         isp: body.isp,
         as: body.as,
         lat: body.lat,
-        lon: body.lon
+        lon: body.lon,
+        ip: body.query
       }
-      console.log(information) //pass information to browser somehow
+      console.log(information2) //pass information to browser somehow
+      information.push(information2);
     }
   })
 }
 
 
 
-app.get('/', function(req, res) {
-  res.send("helloworld")
+// let json = "{var: 'hi'}";
+
+app.get('/showData', function(req, res) {
+  // res.send("helloworld")
+  res.send(information);
 })
